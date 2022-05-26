@@ -7,47 +7,50 @@ from parsel import Selector
 from build.gen.bakdata.corporate.v1.corporate_pb2 import Corporate, Status
 from rb_producer import RbProducer
 
+from constant import State
+
 log = logging.getLogger(__name__)
 
 
 class RbExtractor:
-    def __init__(self, start_rb_id: int, state: str):
+    def __init__(self, start_rb_id: int, state: State):
         self.rb_id = start_rb_id
-        self.state = state
+        self.state = state.value
         self.producer = RbProducer()
+
+    def extract_one(self):
+        try:
+            #log.info(f"Sending Request for: {self.rb_id} and state: {self.state}")
+            text = self.send_request()
+            if "Falsche Parameter" in text:
+                log.info("The end has reached")
+                return
+            selector = Selector(text=text)
+            corporate = Corporate()
+            corporate.rb_id = self.rb_id
+            corporate.state = self.state
+            corporate.reference_id = self.extract_company_reference_number(selector)
+            event_type = selector.xpath("/html/body/font/table/tr[3]/td/text()").get()
+            corporate.event_date = selector.xpath("/html/body/font/table/tr[4]/td/text()").get()
+            corporate.id = f"{self.state}_{self.rb_id}"
+            raw_text: str = selector.xpath("/html/body/font/table/tr[6]/td/text()").get()
+            self.handle_events(corporate, event_type, raw_text)
+            log.debug(corporate)
+        except Exception as ex:
+            log.error(f"Skipping {self.rb_id} in state {self.state}")
+            log.error(f"Cause: {ex}")
+        finally:
+            self.rb_id = self.rb_id + 1
 
     def extract(self):
         while True:
-            try:
-                log.info(f"Sending Request for: {self.rb_id} and state: {self.state}")
-                text = self.send_request()
-                if "Falsche Parameter" in text:
-                    log.info("The end has reached")
-                    break
-                selector = Selector(text=text)
-                corporate = Corporate()
-                corporate.rb_id = self.rb_id
-                corporate.state = self.state
-                corporate.reference_id = self.extract_company_reference_number(selector)
-                event_type = selector.xpath("/html/body/font/table/tr[3]/td/text()").get()
-                corporate.event_date = selector.xpath("/html/body/font/table/tr[4]/td/text()").get()
-                corporate.id = f"{self.state}_{self.rb_id}"
-                raw_text: str = selector.xpath("/html/body/font/table/tr[6]/td/text()").get()
-                self.handle_events(corporate, event_type, raw_text)
-                self.rb_id = self.rb_id + 1
-                log.debug(corporate)
-            except Exception as ex:
-                log.error(f"Skipping {self.rb_id} in state {self.state}")
-                log.error(f"Cause: {ex}")
-                self.rb_id = self.rb_id + 1
-                continue
-        exit(0)
+            self.extract_one()
 
     def send_request(self) -> str:
         url = f"https://www.handelsregisterbekanntmachungen.de/skripte/hrb.php?rb_id={self.rb_id}&land_abk={self.state}"
         # For graceful crawling! Remove this at your own risk!
-        sleep(0.5)
-        return requests.get(url=url).text
+        sleep(0.05)
+        return requests.get(url=url, timeout=3).text
 
     @staticmethod
     def extract_company_reference_number(selector: Selector) -> str:

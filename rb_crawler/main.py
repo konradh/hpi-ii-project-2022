@@ -3,8 +3,8 @@ import os
 
 import click
 
-from rb_crawler.constant import State
-from rb_crawler.rb_extractor import RbExtractor
+from constant import State
+from rb_extractor import RbExtractor
 
 logging.basicConfig(
     level=os.environ.get("LOGLEVEL", "INFO"), format="%(asctime)s | %(name)s | %(levelname)s | %(message)s"
@@ -21,7 +21,7 @@ def run(rb_id: int, state: State):
             error = ValueError("The start rb_id for the state SCHLESWIG_HOLSTEIN (sh) is 7831")
             log.error(error)
             exit(1)
-    RbExtractor(rb_id, state.value).extract()
+    RbExtractor(rb_id, state).extract()
 
 
 if __name__ == "__main__":

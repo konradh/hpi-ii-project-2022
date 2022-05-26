@@ -1,0 +1,14 @@
+{
+    "name": "jdbc-sink",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+        "tasks.max": "1",
+        "topics": "corporate-events,lei-data,lei-relationship-data",
+        "connection.url": "jdbc:sqlite:/data/corporate.sqlite",
+        "auto.create": "true",
+        "insert.mode": "upsert",
+        "name": "jdbc-sink",
+        "pk.mode": "record_key",
+        "pk.fields": "id"
+    }
+}
