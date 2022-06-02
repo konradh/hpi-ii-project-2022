@@ -13,9 +13,11 @@ log = logging.getLogger(__name__)
 
 
 class RbExtractor:
-    def __init__(self, start_rb_id: int, state: State):
+    def __init__(self, start_rb_id: int, state: State, delay: float = 0.1):
         self.rb_id = start_rb_id
         self.state = state.value
+        self.delay = delay
+        self.slow = 0
         self.producer = RbProducer()
 
     def extract_one(self):
@@ -24,7 +26,9 @@ class RbExtractor:
             text = self.send_request()
             if "Falsche Parameter" in text:
                 log.info("The end has reached")
+                self.slow = 30
                 return
+            self.slow = 0
             selector = Selector(text=text)
             corporate = Corporate()
             corporate.rb_id = self.rb_id
@@ -49,8 +53,8 @@ class RbExtractor:
     def send_request(self) -> str:
         url = f"https://www.handelsregisterbekanntmachungen.de/skripte/hrb.php?rb_id={self.rb_id}&land_abk={self.state}"
         # For graceful crawling! Remove this at your own risk!
-        sleep(0.05)
-        return requests.get(url=url, timeout=3).text
+        sleep(max(self.delay, self.slow))
+        return requests.get(url=url, timeout=5).text
 
     @staticmethod
     def extract_company_reference_number(selector: Selector) -> str:

@@ -15,13 +15,9 @@ log = logging.getLogger(__name__)
 @click.command()
 @click.option("-i", "--id", "rb_id", type=int, help="The rb_id to initialize the crawl from")
 @click.option("-s", "--state", type=click.Choice(State), help="The state ISO code")
-def run(rb_id: int, state: State):
-    if state == State.SCHLESWIG_HOLSTEIN:
-        if rb_id < 7830:
-            error = ValueError("The start rb_id for the state SCHLESWIG_HOLSTEIN (sh) is 7831")
-            log.error(error)
-            exit(1)
-    RbExtractor(rb_id, state).extract()
+@click.option("-d", "--delay", type=float, help="The delay between each request")
+def run(rb_id: int, state: State, delay: float):
+    RbExtractor(rb_id, state, delay=delay).extract()
 
 
 if __name__ == "__main__":
