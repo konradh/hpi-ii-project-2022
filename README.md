@@ -31,15 +31,24 @@ bash generate-proto.sh
 poetry install
 ```
 
+Note: At the point of writing, `confluent-kafka` appears to be incompatible with Python3.10.  
+You can use [pyenv](https://github.com/pyenv/pyenv) to install an alternative python version (such as 3.9) on your system.  
+Note that you have to run `poetry env use python3.9` in a context where pyenv is active (see [here](https://github.com/python-poetry/poetry/issues/5252)) for poetry to actually use the python version specified by pyenv.
+
 #### RB crawler
 
 The [rb_crawler](./rb_crawler/) can be used to get announcements from <https://www.handelsregisterbekanntmachungen.de/> (see [INITIAL_README.md](./INITIAL_README.md).
 
 You can also use the [main_multi.py](./rb_crawler/main_multi.py) script to crawl the website more efficiently (faster). There you can also adjust the starting IDs.
 
+After the retrieved information have been dumped into a SQLite database, they can then be parsed and transformed into a more structured data format.
+To achieve this, first perform the [schema transformation](./rb_crawler/rb_schema_transform.sql) and run [rb_parser](./rb_crawler/rb_parser.py) afterwards.
+
 ```bash
 cd rb_crawler
 poetry run python main_multy.py
+sqlite3 --echo ../data/some-database-file.sqlite < rb_schema_transform.sql
+poetry run python rb_parser.py
 ```
 
 #### LEI data
