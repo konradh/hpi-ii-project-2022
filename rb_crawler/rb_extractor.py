@@ -4,7 +4,7 @@ from time import sleep
 import requests
 from parsel import Selector
 
-from build.gen.bakdata.corporate.v1.corporate_pb2 import Corporate, Status
+from build.gen.bakdata.corporate.v2.corporate_pb2 import Corporate, Status
 from rb_producer import RbProducer
 
 from constant import State
@@ -13,8 +13,9 @@ log = logging.getLogger(__name__)
 
 
 class RbExtractor:
-    def __init__(self, start_rb_id: int, state: State, delay: float = 0.1):
+    def __init__(self, start_rb_id: int, state: State, delay: float = 0.1, step: int = 1):
         self.rb_id = start_rb_id
+        self.step = step
         self.state = state.value
         self.delay = delay
         self.slow = 0
@@ -26,7 +27,7 @@ class RbExtractor:
             text = self.send_request()
             if "Falsche Parameter" in text:
                 log.info("The end has reached")
-                self.slow = 30
+                self.slow = 2
                 return
             self.slow = 0
             selector = Selector(text=text)
@@ -34,6 +35,7 @@ class RbExtractor:
             corporate.rb_id = self.rb_id
             corporate.state = self.state
             corporate.reference_id = self.extract_company_reference_number(selector)
+            corporate.registration_authority = self.extract_registration_authority(selector)
             event_type = selector.xpath("/html/body/font/table/tr[3]/td/text()").get()
             corporate.event_date = selector.xpath("/html/body/font/table/tr[4]/td/text()").get()
             corporate.id = f"{self.state}_{self.rb_id}"
@@ -44,7 +46,7 @@ class RbExtractor:
             log.error(f"Skipping {self.rb_id} in state {self.state}")
             log.error(f"Cause: {ex}")
         finally:
-            self.rb_id = self.rb_id + 1
+            self.rb_id = self.rb_id + self.step
 
     def extract(self):
         while True:
@@ -59,6 +61,10 @@ class RbExtractor:
     @staticmethod
     def extract_company_reference_number(selector: Selector) -> str:
         return ((selector.xpath("/html/body/font/table/tr[1]/td/nobr/u/text()").get()).split(": ")[1]).strip()
+
+    @staticmethod
+    def extract_registration_authority(selector: Selector) -> str:
+        return ((selector.xpath("/html/body/font/table/tr[1]/td/nobr/u/text()").get()).split("Aktenzeichen")[0]).strip()
 
     def handle_events(self, corporate, event_type, raw_text):
         if event_type == "Neueintragungen":
