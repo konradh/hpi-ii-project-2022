@@ -64,3 +64,19 @@ cd csv_producer
 poetry run python csv_producer.py path/to/yyyymmdd-0000-gleif-goldencopy-lei2-golden-copy.csv ../build/gen/lei/v1/leidata_pb2:LeiData lei-data
 poetry run python csv_producer.py path/to/yyyymmdd-0000-gleif-goldencopy-rr-golden-copy.csv ../build/gen/lei/v1/leirelationshipdata_pb2:LeiRelationshipData lei-relationship-data
 ```
+
+## Task 3: Extracting information, schema transformation and integration
+
+These steps are performed on a SQLite database of the data. This file is exported by the sqlite Kafka connect sink.
+
+1. Schema transformation and some intgration
+
+    ```bash
+    sqlite3 path/to/corporate.sqlite <(cat transformations/*.sql)
+    ```
+
+2. Extract information from RB texts
+
+    ```bash
+    poetry run python rb_crawler/rb_parser.py --database data/corporate.sqlite
+    ```
