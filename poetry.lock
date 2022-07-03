@@ -611,6 +611,14 @@ python-versions = ">=3.5"
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "python-levenshtein"
+version = "0.12.2"
+description = "Python extension for computing string edit distances and similarities."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "queuelib"
 version = "1.6.2"
 description = "Collection of persistent (disk-based) and non-persistent (memory-based) queues"
@@ -918,7 +926,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "55ae05016bad89800a5650f4296359b9a348aeee33718c6b49c90825d6d97458"
+content-hash = "91d5aa37c5479e3ec5d39241d6b4f8afa209ed36cdda48952b0e8ff9c5b95c40"
 
 [metadata.files]
 async-generator = [
@@ -1318,6 +1326,9 @@ pysocks = [
 python-dotenv = [
     {file = "python-dotenv-0.20.0.tar.gz", hash = "sha256:b7e3b04a59693c42c36f9ab1cc2acc46fa5df8c78e178fc33a8d4cd05c8d498f"},
     {file = "python_dotenv-0.20.0-py3-none-any.whl", hash = "sha256:d92a187be61fe482e4fd675b6d52200e7be63a12b724abbf931a40ce4fa92938"},
+]
+python-levenshtein = [
+    {file = "python-Levenshtein-0.12.2.tar.gz", hash = "sha256:dc2395fbd148a1ab31090dd113c366695934b9e85fe5a4b2a032745efd0346f6"},
 ]
 queuelib = [
     {file = "queuelib-1.6.2-py2.py3-none-any.whl", hash = "sha256:4b96d48f650a814c6fb2fd11b968f9c46178b683aad96d68f930fe13a8574d19"},

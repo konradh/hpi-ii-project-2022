@@ -80,3 +80,14 @@ These steps are performed on a SQLite database of the data. This file is exporte
     ```bash
     poetry run python rb_crawler/rb_parser.py --database data/corporate.sqlite
     ```
+
+## Task 4: Data Cleaning
+
+Assuming the database is in the state resulting after task 3, data cleaning is performed as follows:
+
+1. Deduplicating persons
+
+   ```bash
+   sqlite3 path/to/corporate.sqlite < transformations/6_allow_deleting_of_persons.sql
+   poetry run python rb_crawler/rb_person_deduplicator.py --database path/to/corporate.sqlite
+   ```
