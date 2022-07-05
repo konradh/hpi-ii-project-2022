@@ -91,3 +91,11 @@ Assuming the database is in the state resulting after task 3, data cleaning is p
    sqlite3 path/to/corporate.sqlite < transformations/6_allow_deleting_of_persons.sql
    poetry run python rb_crawler/rb_person_deduplicator.py --database path/to/corporate.sqlite
    ```
+
+2. Matching LEI and RB company names
+
+This creates a `rb-lei` join table.
+
+    ```bash
+    poetry run python company_matching/match.py path/to/corporate.sqlite
+    ```
