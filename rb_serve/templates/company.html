@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Company display</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+  </head>
+  <body>
+    <div class="container justify-content-center mt-5">
+        <div class="row">
+            <div class="col-8">
+                <h1>Company display</h1>
+            </div>
+            <div class="col-2">
+                <button class="btn btn-primary" onclick="location.href = '/search'">Back to search</button>
+            </div>
+        </div>
+        <ul class="list-group mt-5">
+            <li class="list-group-item w-75">
+                <i class="bi bi-info-circle me-4"></i>
+                {{ company.name }}
+                {% if company.type %}
+                    <span class="badge bg-primary ms-4">{{ company.type }}</span>
+                {% endif %}
+                {% if company.is_active %}
+                    <span class="badge bg-success ms-4">Active</span>
+                {% else %}
+                    <span class="badge bg-danger ms-4">Inactive</span>
+                {% endif %}
+            </li>
+            <li class="list-group-item w-75">
+                <i class="bi bi-link-45deg me-4"></i>
+                {% if children|length > 0 %}
+                    <span class="badge bg-danger">{{ children|length }} Children</span>
+                {% else %}
+                    <span class="badge bg-success">No children</span>
+                {% endif %}
+                {% if parents|length > 0 %}
+                    <span class="badge bg-danger">Owned by another company</span>
+                {% else %}
+                    <span class="badge bg-success">Not owned by another company</span>
+                {% endif %}
+            </li>
+            <li class="list-group-item w-75">
+                <i class="bi bi-book me-4"></i>
+                {{ company.registration_authority }} {{ company.reference_id }}
+            </li>
+            <li class="list-group-item w-75">
+                <i class="bi bi-geo-alt me-4"></i>
+                {{ company.address }}
+            </li>
+            <li class="list-group-item w-75">
+                <i class="bi bi-award me-4"></i>
+                {{ company.purpose }}
+            </li>
+            <li class="list-group-item w-75">
+                <i class="bi bi-currency-exchange me-4"></i>
+                {{ '{:,.2f}'.format(company.capital or 0) }} {{ company.currency }}
+            </li>
+        </ul>
+
+        <h3 class="mt-5">
+            Persons:
+        </h3>
+        <ul class="list-group">
+            {% for person in persons %}
+                <li class="list-group-item w-75">
+                    <i class="bi bi-person-circle me-4"></i>
+                    {{ person.last_name }}, {{ person.first_name }} ({{ person.role }}, started at {{ person.start_date }})
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if parents|length > 0 %}
+            <h3 class="mt-3">
+                Owned by:
+            </h3>
+            <ul class="list-unstyled card-columns" style="column-count: 2;">
+                {% for company in parents %}
+                    <li class="position-relative border rounded border-grey d-block mb-3 p-2" style="cursor: pointer;" onclick="location.href = '/companies/{{ company.id }}'">
+                        <i class="bi bi-building me-4"></i>
+                        {{ company.name }}
+                        <i class="bi bi-box-arrow-up-right position-absolute end-0 me-3"></i>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+
+        {% if children|length > 0 %}
+            <h3 class="mt-3">
+                Children:
+            </h3>
+            <ul class="list-unstyled card-columns" style="column-count: 2;">
+                {% for company in children %}
+                    <li class="position-relative border rounded border-grey d-block mb-3 p-2" style="cursor: pointer;" onclick="location.href = '/companies/{{ company.id }}'">
+                        <i class="bi bi-building me-4"></i>
+                        {{ company.name }}
+                        <i class="bi bi-box-arrow-up-right position-absolute end-0 me-3"></i>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if related_companies|length > 0 %}
+            <h3 class="mt-3">
+                Related companies:
+            </h3>
+            <ul class="list-unstyled card-columns" style="column-count: 2;">
+                {% for company in related_companies %}
+                    <li class="position-relative border rounded border-grey d-block mb-3 p-2" style="cursor: pointer;" onclick="location.href = '/companies/{{ company.id }}'">
+                        <i class="bi bi-building me-4"></i>
+                        {{ company.name }}
+                        <i class="bi bi-box-arrow-up-right position-absolute end-0 me-3"></i> <br/>
+                        Related through {{ company.persons_in_common }}
+                    </li>
+                {% endfor %}
+                {% if related_companies|length % 2 == 1 %}
+                    <li class="position-relative border rounded border-grey d-block mb-3 p-2">&nbsp;<br>&nbsp;</li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+  </body>
+</html>

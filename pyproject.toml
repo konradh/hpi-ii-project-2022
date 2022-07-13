@@ -76,6 +76,7 @@ click = "8.0.2"
 python-dotenv = "^0.20.0"
 tqdm = "^4.64.0"
 python-Levenshtein = "^0.12.2"
+Flask = "^2.1.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.7b0", allow-prereleases = true, python = "^3.8" }

@@ -96,6 +96,15 @@ Assuming the database is in the state resulting after task 3, data cleaning is p
 
 This creates a `rb-lei` join table.
 
-    ```bash
-    poetry run python company_matching/match.py path/to/corporate.sqlite
-    ```
+   ```bash
+   poetry run python company_matching/match.py path/to/corporate.sqlite
+   ```
+
+## Task 5: Presentation
+
+You can browse the companies and their relationships by starting a small flask webserver:
+
+   ```bash
+   cd rb_serve
+   poetry run flask run
+   ```
