@@ -32,7 +32,7 @@ def search():
             company.similarity = distance(company.name, name)
         results = sorted(app.companies, key=lambda x: x.similarity)[:10]
 
-    return render_template("search.html", results=results, searchedCompanyName=name or "HRB 719915:SAP SE")
+    return render_template("search.html", results=results, searchedCompanyName=name or "SAP SE")
 
 
 @app.route("/companies/<id>")

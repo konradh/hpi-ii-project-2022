@@ -57,6 +57,7 @@ class Company:
         self.typed_events.append(TypedEvent(date, event_type, data))
 
     def set_name(self, name, date):
+        name = re.sub(r'^HR[AB] \d+( \w+)?: ?', '', name)
         if name != self.name:
             self.add_typed_event(date, EventType.NEW_NAME, name)
             self.name = name
