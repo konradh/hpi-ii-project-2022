@@ -108,3 +108,7 @@ You can browse the companies and their relationships by starting a small flask w
    cd rb_serve
    poetry run flask run
    ```
+
+Note: If you don't want to execute all the necessary data transformations on your device,
+you can download a sqlite database file fully populated with the data resulting from steps 1-4 from
+the HPI owncloud (link can be found in our presentation slides).
